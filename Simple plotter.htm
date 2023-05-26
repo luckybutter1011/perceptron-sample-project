@@ -1,0 +1,60 @@
+<html>
+    <script src="myplotlib.js"></script>
+    <script src="perceptron.js"></script>
+    <body>
+        <!-- create canvas -->
+        <canvas id="myCanvas" width="800px" height="800px" style="border: 1px solid brown;max-width: 800px;width: 100%;"></canvas>
+
+        <script>
+            //Create a Plotter
+            const plotter = new XYPlotter("myCanvas");//use canvas
+            plotter.transformXY();//transform into XY
+            //initiate the value
+            const xMax = plotter.xMax;
+            const yMax = plotter.yMax;
+            const xMin = plotter.xMin;
+            //Create Random XY points
+            const numPoints = 2000;
+            const XPoints = [];
+            const YPoints = [];
+            
+            for(let i = 0; i < numPoints ; i++)
+            {
+                XPoints[i] = Math.random()*xMax;
+                YPoints[i] = Math.random()*yMax;
+            }
+            
+            //Create a Line Function
+            function f(x)
+            {
+                return x*1.2 + 50;
+            }
+            
+            //Correct Answers
+            let desired = [];//output
+            for(let i = 0; i < numPoints; i++)
+            {
+                desired[i] = 0;
+                if(YPoints[i] > f(XPoints[i])) desired[i] = 1;
+            }
+            
+            //create perceptron
+            const perceptron = new Perceptron(2, 0.00001);
+
+            //train data
+            for(let i=0; i<100; i++)
+                for(let j=0; j<500; j++)
+                    perceptron.train([XPoints[j], YPoints[j]] ,desired[j]);
+
+            //Display the results
+            for(let i = 0; i < numPoints; i++)
+            {
+                let color = "black";
+                if(perceptron.activate([XPoints[i], YPoints[i]]) == 0) color = "blue";
+                plotter.plotPoint(XPoints[i], YPoints[i], color);
+            }
+
+            plotter.plotLine(xMin, f(xMin), xMax, f(xMax));//Plot a line
+        </script>
+    </body>
+</html>
